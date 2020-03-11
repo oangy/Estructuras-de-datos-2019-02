@@ -3,7 +3,8 @@
 public class EstructuraTrabajo {
 
     public static void main(String[] args) {
-        new Snake().setVisible(true);
+        Snake ventana =new Snake();
+        ventana.setVisible(true);
     }
 
 }

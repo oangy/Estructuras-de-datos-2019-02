@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -22,10 +23,18 @@ public class Tablero extends JPanel implements ActionListener {
     Fantasma fantasma1;
     Fantasma fantasma2;
     Timer timer;
+    //definiendo los limites del tablero ( el cual es de tamaño 810, 600 definido en la clase snake)
+    int superiorx = 780;
+    int superiory = 550;
+    int inferiory = 0;
+    int inferiorx = 0;
+    
+    //variable que dice la velocidad, por defecto el profesor la dejo en 4
+    int velocidad = 6;
 
     public Tablero() {
         setBackground(Color.BLACK);
-
+        
 //        snake1.push(new Punto(30, 30));
 //        snake1.push(new Punto(40, 30));
         setFocusable(true);
@@ -52,16 +61,41 @@ public class Tablero extends JPanel implements ActionListener {
 
     public void mover() {
         if (pacman.moverArriba) {
-            pacman.y -= 4;
+            if (pacman.y-velocidad>=0) {
+                pacman.y -= velocidad;
+            }
+            else{
+                pacman.y=inferiory;
+                pacman.moverArriba=false;
+            }
+            
         }
         if (pacman.moverAbajo) {
-            pacman.y += 4;
+            if (pacman.y+velocidad<=superiory) {
+                pacman.y += velocidad;
+            }
+            else{
+                pacman.y=superiory;
+                pacman.moverAbajo=false;
+            }
         }
         if (pacman.moverDerecha) {
-            pacman.x += 8;
+            if (pacman.x+velocidad<=superiorx) {
+                pacman.x += velocidad;
+            }
+            else{
+                pacman.x=superiorx;
+                pacman.moverDerecha=false;
+            }
         }
         if (pacman.moverIzquierda) {
-            pacman.x -= 4;
+            if (pacman.x-velocidad>=0) {
+                pacman.x -= velocidad;
+            }
+            else{
+                pacman.x=inferiorx;
+                pacman.moverIzquierda=false;
+            }
         }
     }
 
