@@ -22,9 +22,9 @@ public class Snake extends JFrame {
             setSize(new Dimension(810, 600));
         setTitle("PAC-MAN");
         setLocationRelativeTo(null);
-        Dimension o = this.getSize();
-        System.out.println("alto"+o.height);
-        System.out.println("largo"+o.width);
+        //Dimension o = this.getSize();
+        //System.out.println("alto"+o.height);
+        //System.out.println("largo"+o.width);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     

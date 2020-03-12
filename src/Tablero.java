@@ -61,7 +61,7 @@ public class Tablero extends JPanel implements ActionListener {
             while (true) {
                 System.out.println("Elije entre estos colores JUGADOR 2:\n1=azul\n2=rojo\n3=verde");// \n es un codigo para dar un enter en el sstring
                 color2 = entrada.nextInt();
-                if (color1 == 1 || color1 == 2 || color1 == 3) {
+                if (color2 == 1 || color2 == 2 || color2 == 3) {
                     break;
                 } else {
                     System.out.println("SOLO HAY ESOS COLORES PARA EL JUGADOR 2  Y ACEPTE SU DESTINO, MALDITO DEL SEGUNDO CONTROL");
@@ -79,14 +79,16 @@ public class Tablero extends JPanel implements ActionListener {
 
 //        snake1.push(new Punto(30, 30));
 //        snake1.push(new Punto(40, 30));
-        setFocusable(true);
-        requestFocusInWindow();
+        
         //aniadiendo listeners de controles para los jugadores
         addKeyListener(new listenerJugador1());
         if (numeroJugadores==2) {
             addKeyListener(new listenerJugador2());
         }
-
+        
+        setFocusable(true);
+        requestFocusInWindow();
+        
         fantasma1 = new Fantasma(50, 250, fantasma1Img);
         fantasma2 = new Fantasma(150, 450, fantasma2Img);
 
