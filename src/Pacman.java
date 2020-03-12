@@ -1,5 +1,6 @@
 
 import java.awt.Image;
+import javax.swing.ImageIcon;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,6 +23,7 @@ public class Pacman {
     boolean moverDerecha = false;
     boolean moverIzquierda = false;
     Tablero tablero;
+    String color;
     //limites de movimiento
     int superiorx;
     int superiory;
@@ -30,16 +32,17 @@ public class Pacman {
     //variable que dice la velocidad, por defecto el profesor la dejo en 4
     int velocidad;
     
-    public Pacman(int x, int y, Image imagen, Tablero tablero) {
+    public Pacman(int x, int y, String color, Tablero tablero) {
         this.x = x;
         this.y = y;
-        this.imagen = imagen;
+        this.imagen = new ImageIcon(this.getClass().getResource("/imagenes/pacman/" + color + "/pacman-derecha.gif")).getImage();
         this.tablero = tablero;
         this.superiorx=tablero.superiorx;
         this.superiory=tablero.superiory;
         this.inferiorx=tablero.inferiorx;
         this.inferiory=tablero.inferiory;
         this.velocidad=4;
+        this.color = color;
     }
     
     public void mover(){
