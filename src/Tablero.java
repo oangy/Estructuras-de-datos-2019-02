@@ -82,7 +82,7 @@ public class Tablero extends JPanel implements ActionListener {
                 }
                 break;
             } else {
-                System.out.println("SOLO HAY ESOS COLORES PARA EL JUGADOR 1  Y ACEPTE SU DESTINO");
+                System.out.println("SOLO HAY DISPONIBLES ESOS COLORES PARA EL JUGADOR 1  Y ACEPTE SU DESTINO");
             }
         }
         if (numeroJugadores == 2) {
@@ -99,7 +99,7 @@ public class Tablero extends JPanel implements ActionListener {
                     }
                     break;
                 } else {
-                    System.out.println("SOLO HAY ESOS COLORES PARA EL JUGADOR 2  Y ACEPTE SU DESTINO, MALDITO DEL SEGUNDO CONTROL");
+                    System.out.println("SOLO HAY DISPONIBLES ESOS COLORES PARA EL JUGADOR 2  ");
                 }
             }
         }

@@ -6,7 +6,7 @@
 
 /**
  *
- * @author Angy la mejor del mundo
+ * @author Angy 
  */
 public class Punto {
     boolean caminable=true,galleta=false,obstaculo=false;

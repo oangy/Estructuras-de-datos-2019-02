@@ -9,7 +9,7 @@ import java.awt.Image;
 
 /**
  *
- * @author angy ft santiago <3
+ * @author angy 
  */
 public class Jugador {
     Pacman pacman;
