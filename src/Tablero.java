@@ -19,8 +19,8 @@ import java.util.Queue;
 
 public class Tablero extends JPanel implements ActionListener {
 
-    //mapa de puntos con atributos de obstaculo,caminable,moneda
-    HashMap<String, Punto> coordenadas = new HashMap<String, Punto>();
+    //mapa 27x20 = 540 puntos con atributos de obstaculo,caminable,moneda
+    Punto[][] coordenadas; 
 
     //fila de cambios en puntos
     Queue<String> filaCambios = new LinkedList<String>();
@@ -35,14 +35,24 @@ public class Tablero extends JPanel implements ActionListener {
     Fantasma fantasma2;
     Timer timer;
     //definiendo los limites del tablero ( el cual es de tamaño 810, 600 definido en la clase snake)
-    int superiorx = 780;
-    int superiory = 550;
+//    int superiorx = 780;
+//    int superiory = 550;
+    int superiorx ;
+    int superiory ;
     int inferiory = 0;
     int inferiorx = 0;
+    
+    int numCoordenadasX;
+    int numCoordenadasY;
 
-    public Tablero() {
-
-        //preguntando los paramentros iniciales
+    public Tablero(int x, int y) {
+        
+        superiorx= x-30-10;
+        superiory= y-30-15-15 ;
+        numCoordenadasX = x/30;
+        numCoordenadasY = y/30;
+        coordenadas= new Punto[numCoordenadasX][numCoordenadasY];
+        //---------------------------------------------------preguntando los paramentros iniciales------------------------------------------------------------
         int numeroJugadores = 1;
         while (true) {
             System.out.println("Ingrese la cantidad de jugadores(1-2)");
@@ -93,7 +103,9 @@ public class Tablero extends JPanel implements ActionListener {
                 }
             }
         }
-
+        //------------------------------------------------------------generando mapa-------------------------------------------------------------------------------------------------
+        
+        
         //creando jugadores
         jugadores[0] = new Jugador(1, 30, 30, color1L, this);
         if (numeroJugadores == 2) {
@@ -110,18 +122,12 @@ public class Tablero extends JPanel implements ActionListener {
             addKeyListener(new listenerJugador2());
         }
 
-        //generando galletas
-        for (int i = 0; i <= superiorx; i++) {
-            for (int j = 0; j <= superiory; j++) {
-                String tupla = "(" + i + "," + j + ")";
-
-                if ((i % 30 == 0) && (j % 30 == 0)) {
-                    Punto coordenada = new Punto(i, j);
-                    coordenada.galleta = true;
-                    coordenadas.put(tupla, coordenada);
-                    filaCambios.add(tupla);
-                }
-
+        //generando todos los puntos como galletas
+        for (int i = 0; i < numCoordenadasX; i++) {
+            for (int j = 0; j < numCoordenadasY; j++) {
+                Punto coordenada = new Punto(i*30, j*30);
+                coordenada.galleta = true;
+                coordenadas[i][j]=coordenada;
             }
         }
         // creando obstaculos
@@ -134,13 +140,13 @@ public class Tablero extends JPanel implements ActionListener {
             for (int i = 0; i < numeroObstaculos; i++) {
                 System.out.println("Obstaculo " + i + 1 + ": ");
                 System.out.println("Ingrese la x de la coordenada inicial: ");
-                int xInicial = 30 * entrada.nextInt();
+                int xInicial = entrada.nextInt();
                 System.out.println("Ingrese la y de la coordenada inicial: ");
-                int yInicial = 30 * entrada.nextInt();
+                int yInicial = entrada.nextInt();
                 System.out.println("Ingrese la x de la coordenada final: ");
-                int xFinal = 30 * entrada.nextInt();
+                int xFinal =entrada.nextInt();
                 System.out.println("Ingrese la y de la coordenada final: ");
-                int yFinal = 30 * entrada.nextInt();
+                int yFinal =entrada.nextInt();
 
                 //generando los puntos
                 int xMenor = 0;
@@ -163,70 +169,64 @@ public class Tablero extends JPanel implements ActionListener {
                 }
 
                 //generando L
+//                for (int j = xMenor; j <= xMayor; j++) {
+//                    String tupla = "(" + j + "," + yMenor + ")";
+//                    if (coordenadas.containsKey(tupla)) {
+//                        Punto punto = coordenadas.get(tupla);
+//                        punto.caminable = false;
+//                        punto.galleta = false;
+//                        punto.obstaculo = true;
+//                        filaCambios.add(tupla);
+//                    } else {
+//                        Punto punto = new Punto(j, yMenor);
+//                        punto.caminable = false;
+//                        punto.galleta = false;
+//                        punto.obstaculo = true;
+//                        filaCambios.add(tupla);
+//                    }
+//                }
+//                //generando S
+//                for (int j = yMenor; j <= yMayor; j++) {
+//                    String tupla = "(" + xMenor + "," + j + ")";
+//
+//                    if (coordenadas.containsKey(tupla)) {
+//                        Punto punto = coordenadas.get(tupla);
+//                        punto.caminable = false;
+//                        punto.galleta = false;
+//                        punto.obstaculo = true;
+//                        filaCambios.add(tupla);
+//                    } else {
+//                        Punto punto = new Punto(xMenor, j);
+//                        punto.caminable = false;
+//                        punto.galleta = false;
+//                        punto.obstaculo = true;
+//                        filaCambios.add(tupla);
+//                    }
+//                }//generando P
+//                for (int j = xMenor; j <= xMayor; j++) {
+//                    String tupla = "(" + j + "," + yMayor + ")";
+//                    if (coordenadas.containsKey(tupla)) {
+//                        Punto punto = coordenadas.get(tupla);
+//                        punto.caminable = false;
+//                        punto.galleta = false;
+//                        punto.obstaculo = true;
+//                        filaCambios.add(tupla);
+//                    } else {
+//                        Punto punto = new Punto(j, yMayor);
+//                        punto.caminable = false;
+//                        punto.galleta = false;
+//                        punto.obstaculo = true;
+//                        filaCambios.add(tupla);
+//                    }
+//
+//                }
+                //cambiando las galletas a zonas no caminables
                 for (int j = xMenor; j <= xMayor; j++) {
-                    String tupla = "(" + j + "," + yMenor + ")";
-                    if (coordenadas.containsKey(tupla)) {
-                        Punto punto = coordenadas.get(tupla);
-                        punto.caminable = false;
-                        punto.galleta = false;
-                        punto.obstaculo = true;
-                        filaCambios.add(tupla);
-                    } else {
-                        Punto punto = new Punto(j, yMenor);
-                        punto.caminable = false;
-                        punto.galleta = false;
-                        punto.obstaculo = true;
-                        filaCambios.add(tupla);
-                    }
-                }
-                //generando S
-                for (int j = yMenor; j <= yMayor; j++) {
-                    String tupla = "(" + xMenor + "," + j + ")";
-
-                    if (coordenadas.containsKey(tupla)) {
-                        Punto punto = coordenadas.get(tupla);
-                        punto.caminable = false;
-                        punto.galleta = false;
-                        punto.obstaculo = true;
-                        filaCambios.add(tupla);
-                    } else {
-                        Punto punto = new Punto(xMenor, j);
-                        punto.caminable = false;
-                        punto.galleta = false;
-                        punto.obstaculo = true;
-                        filaCambios.add(tupla);
-                    }
-                }//generando P
-                for (int j = xMenor; j <= xMayor; j++) {
-                    String tupla = "(" + j + "," + yMayor + ")";
-                    if (coordenadas.containsKey(tupla)) {
-                        Punto punto = coordenadas.get(tupla);
-                        punto.caminable = false;
-                        punto.galleta = false;
-                        punto.obstaculo = true;
-                        filaCambios.add(tupla);
-                    } else {
-                        Punto punto = new Punto(j, yMayor);
-                        punto.caminable = false;
-                        punto.galleta = false;
-                        punto.obstaculo = true;
-                        filaCambios.add(tupla);
-                    }
-
-                }
-                //generando zona no caminable
-                for (int j = xMenor + 1; j < xMayor; j++) {
-                    for (int k = yMenor; yMayor < 10; k++) {
-                        String tupla = "(" + j + "," + k + ")";
-                        if (coordenadas.containsKey(tupla)) {
-                            Punto punto = coordenadas.get(tupla);
-                            punto.caminable = false;
-                            punto.galleta = false;
-                            punto.obstaculo = false;
-                            filaCambios.add(tupla);
-                        } else {
-
-                        }
+                    for (int k = yMenor; k <= yMayor; k++) {
+                        Punto coordenada=coordenadas[i][j];
+                        coordenada.caminable=false;
+                        coordenada.galleta=false;
+                        coordenada.obstaculo=true;
                     }
                 }
 
@@ -243,7 +243,7 @@ public class Tablero extends JPanel implements ActionListener {
         timer.start();
     }
 
-    //aqui se calculan todos los movimientos y se repinta
+    //-----------------------------calculando todos los movimientos y dibujandolos--------------------------------------
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         //recorriendo todos los pacmans moviendolos y dibujandolos
@@ -252,33 +252,17 @@ public class Tablero extends JPanel implements ActionListener {
             pacman.mover();
             g.drawImage(pacman.imagen, pacman.x, pacman.y, this);
         }
-        //recorriendo hasmap para dibujar puntos
-        Iterator it = coordenadas.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            //System.out.println(pair.getKey() + " = " + pair.getValue());
-            Punto punto =(Punto) pair.getValue();
-            g.drawImage(fantasma1.imagen, punto.x, punto.y, this);
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-        //actualizando los puntos del mapa desde la pila de cambios
-        /*while(!filaCambios.isEmpty()){
-            String tupla=filaCambios.poll(); 
-            Punto punto = coordenadas.get(tupla);
-                if (punto.galleta) {
-                    g.drawOval(punto.x, punto.y, 3, 3);
-                }
-        }*/
-        //actualizacion recorriendo hashmap
-        for (int i = 0; i <= superiorx; i++) {
-            for (int j = 0; j <= superiory; j++) {
-                String tupla = "("+i+","+j+")";
-                Punto punto = coordenadas.get(tupla);
-                if (punto.galleta) {
-                    g.drawOval(i, j, 100, 100);
+        //dibujando coordenadas
+        for (int i = 0; i < numCoordenadasX; i++) {
+            for (int j = 0; j < numCoordenadasY; j++) {
+                Punto coordenada = coordenadas[i][j];
+                //viendo que tipo de punto es
+                if (coordenada.galleta) {
+                     g.drawImage(fantasma1.imagen, coordenada.x, coordenada.y, this);
                 }
             }
         }
+        
         g.drawImage(fantasma1.imagen, fantasma1.x, fantasma1.y, this);
         g.drawImage(fantasma2.imagen, fantasma2.x, fantasma2.y, this);
 

@@ -14,12 +14,14 @@ import javax.swing.JFrame;
  * @author Usuario
  */
 public class Snake extends JFrame {
+    int x = 810-15;
+    int y = 600-15-10;
     public Snake() {
 
-        add(new Tablero());
+        add(new Tablero(x,y));
 
         setResizable(false);
-            setSize(new Dimension(810, 600));
+            setSize(new Dimension(x, y));
         setTitle("PAC-MAN");
         setLocationRelativeTo(null);
         //Dimension o = this.getSize();
