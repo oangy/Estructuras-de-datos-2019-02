@@ -39,6 +39,9 @@ public class Tablero extends JPanel implements ActionListener {
 //    int superiorx = 780;
 //    int superiory = 550;
     
+    //contador global de actualizaciones de dibujo que inicia en 0 y se reinicia en 200 (utilizado para el movimiento aleatorio de los fantasmas)
+    int frames;
+    
     int limiteInferiorFantasmas;
     int limiteSuperiorFantasmas;
     int numeroFantasmas;
@@ -223,7 +226,6 @@ public class Tablero extends JPanel implements ActionListener {
     //-----------------------------calculando todos los movimientos y dibujandolos--------------------------------------
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
         //dibujando coordenadas
         for (int i = 0; i < numCoordenadasX; i++) {
             for (int j = 0; j < numCoordenadasY; j++) {
@@ -234,7 +236,6 @@ public class Tablero extends JPanel implements ActionListener {
                 }
             }
         }
-        
         //dibujando bordes de los obstaculos
         for (int i = 0; i < obstaculos.length; i++) {
             int xMenor = (obstaculos[i]).inicio.x;
@@ -251,24 +252,30 @@ public class Tablero extends JPanel implements ActionListener {
             //abajo
             g.drawLine(xMenor, yMayor, xMayor, yMayor);
         }
-        
-        
         //recorriendo todos los pacmans moviendolos y dibujandolos
         for (int i = 0; i < jugadores.length; i++) {
             Pacman pacman = jugadores[i].pacman;
             pacman.mover();
             g.drawImage(pacman.imagen, pacman.x, pacman.y, this);
         }
-        
-        //recorriendo todos los fantasmas
+        //recorriendo todos los fantasmas moviendolos y dibujandolos
         for (int i = 0; i < numeroFantasmas; i++) {
             Fantasma fantasma = fantasmas[i];
+            fantasma.mover();
             g.drawImage(fantasma.imagen, fantasma.x, fantasma.y, this);
         }
+        //contabilizando los frames de actualizacion
+        if (this.frames ==200) {
+            this.frames = 0;
+        }
+        else{
+            this.frames ++;
+        }
+        
     }
 
     public void actualizarTablero() {
-        //moviendo los pacmans
+        //actualizando todos los datos en pantalla
 
         repaint();
     }
@@ -281,7 +288,7 @@ public class Tablero extends JPanel implements ActionListener {
     
     
 
-    //controles
+    //-------------------------------------------------------------------------controles--------------------------------------------------------
     private class listenerJugador1 extends java.awt.event.KeyAdapter {
 
         Pacman pacman = jugadores[0].pacman;
