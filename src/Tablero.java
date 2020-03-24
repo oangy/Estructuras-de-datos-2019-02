@@ -46,6 +46,9 @@ public class Tablero extends JPanel implements ActionListener {
     int limiteInferiorFantasmas;
     int limiteSuperiorFantasmas;
     int numeroFantasmas;
+    
+    int limiteInferiorBolasPoder;
+    int limiteSuperiorBolasPoder;
 
     int superiorx;
     int superiory;
@@ -56,6 +59,7 @@ public class Tablero extends JPanel implements ActionListener {
     int numCoordenadasY;
     
     int comida;
+    private int numeroBolasPoder;
 
     public Tablero(int x, int y) {
         
@@ -215,16 +219,38 @@ public class Tablero extends JPanel implements ActionListener {
         yAux = ((int) (Math.random() * (this.numCoordenadasY - 0 + 1) + 0)) * 30;
         this.spawnsFantasmas[1] = new Punto(xAux, yAux);
 
-        System.out.println("Que rango de fantasmas deben de aparecer en el mapa?");
+        System.out.println("Que rango de FANTASMAS deben de aparecer en el mapa?");
         System.out.println("Escriba limite inferior del rango:");
         this.limiteInferiorFantasmas = entrada.nextInt();
         System.out.println("Escriba limite superior del rango:");
         this.limiteSuperiorFantasmas = entrada.nextInt();
-
+        //generando fantasmas
         this.numeroFantasmas = ((int) (Math.random() * (limiteSuperiorFantasmas - limiteInferiorFantasmas + 1) + limiteInferiorFantasmas));
         fantasmas = new Fantasma[numeroFantasmas];
         for (int i = 0; i < numeroFantasmas; i++) {
             fantasmas[i] = new Fantasma(this);
+        }
+        
+        System.out.println("Que rango de BOLAS DE PODER deben de aparecer en el mapa?");
+        System.out.println("Escriba limite inferior del rango:");
+        this.limiteInferiorBolasPoder = entrada.nextInt();
+        System.out.println("Escriba limite superior del rango:");
+        this.limiteSuperiorBolasPoder = entrada.nextInt();
+        //generando bolas de poder
+        this.numeroBolasPoder = ((int) (Math.random() * (limiteSuperiorBolasPoder - limiteInferiorBolasPoder + 1) + limiteInferiorBolasPoder));
+        int generadas = 0;
+        while(generadas<=this.numeroBolasPoder){
+            int limiteSuperiorRangoX = coordenadas.length-1;
+            int limiteSuperiorRangoY = (coordenadas[0]).length-1;
+            int coordenadaRandomX =((int) (Math.random() * (limiteSuperiorRangoX - 0 + 1) + 0));
+            int coordenadaRandomY = ((int) (Math.random() * (limiteSuperiorRangoY - 0 + 1) + 0));
+            Punto punto = coordenadas[coordenadaRandomX][coordenadaRandomY];
+            if (punto.galleta) {
+                punto.galleta=false;
+                punto.bolaDePoder=true;
+                punto.puntaje=30;
+                generadas ++;
+            }
         }
 
     }
