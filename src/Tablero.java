@@ -19,59 +19,63 @@ import java.util.Queue;
 
 public class Tablero extends JPanel implements ActionListener {
 
+    private Boolean partidaFinalizada = false;
+
     //mapa 27x20 = 540 puntos con atributos de obstaculo,caminable,moneda
-    Punto[][] coordenadas; 
-    
+    Punto[][] coordenadas;
+
     //arreglo de obstaculos
     Obstaculo[] obstaculos;
-
 
     Scanner entrada = new Scanner(System.in);
 
     Jugador[] jugadores;
-    
+
     Fantasma[] fantasmas;
-    
+
     Punto[] spawnsFantasmas;
-    
+
     Timer timer;
     //definiendo los limites del tablero ( el cual es de tamaño 810, 600 definido en la clase snake)
 //    int superiorx = 780;
 //    int superiory = 550;
-    
-    //contador global de actualizaciones de dibujo que inicia en 0 y se reinicia en 200 (utilizado para el movimiento aleatorio de los fantasmas)
+
+    //contador global de actualizaciones de dibujo que inicia en 0 y se reinicia en 150 (utilizado para el movimiento aleatorio de los fantasmas)
     int frames;
-    
+
     int limiteInferiorFantasmas;
     int limiteSuperiorFantasmas;
     int numeroFantasmas;
-    
-    int superiorx ;
-    int superiory ;
+
+    int superiorx;
+    int superiory;
     int inferiory = 0;
     int inferiorx = 0;
-    
+
     int numCoordenadasX;
     int numCoordenadasY;
+    
+    int comida;
 
     public Tablero(int x, int y) {
         
-        superiorx= x-30-10;
-        superiory= y-30-15-15 ;
-        numCoordenadasX = x/30;
-        numCoordenadasY = y/30;
-        coordenadas= new Punto[numCoordenadasX][numCoordenadasY];
-        //---------------------------------------------------preguntando los paramentros iniciales------------------------------------------------------------
         
+        superiorx = x - 30 - 10;
+        superiory = y - 30 - 15 - 15;
+        numCoordenadasX = x / 30;
+        numCoordenadasY = y / 30;
+        coordenadas = new Punto[numCoordenadasX][numCoordenadasY];
+        //---------------------------------------------------preguntando los paramentros iniciales------------------------------------------------------------
+
         initialSpawn();
         setFocusable(true);
         requestFocusInWindow();
 
-
         timer = new Timer(50, this);
         timer.start();
     }
-    public void initialSpawn(){
+
+    public void initialSpawn() {
         int numeroJugadores = 1;
         while (true) {
             System.out.println("Ingrese la cantidad de jugadores(1-2)");
@@ -123,23 +127,25 @@ public class Tablero extends JPanel implements ActionListener {
             }
         }
 //----------------------------------------------------------------generando mapa-------------------------------------------------------------------------------------------------
-        
+
         setBackground(Color.BLACK);
-       //generando todos los puntos como galletas
+        comida=0;
+        //generando todos los puntos como galletas
         for (int i = 0; i < numCoordenadasX; i++) {
             for (int j = 0; j < numCoordenadasY; j++) {
-                Punto coordenada = new Punto(i*30, j*30);
+                Punto coordenada = new Punto(i * 30, j * 30);
                 coordenada.galleta = true;
-                coordenadas[i][j]=coordenada;
+                coordenadas[i][j] = coordenada;
+                comida++;
             }
         }
         // creando obstaculos
         System.out.println("Ingrese la cantidad de obstaculos que desea: ");
         int numeroObstaculos = 0;
-        obstaculos=new Obstaculo[numeroObstaculos];
+        obstaculos = new Obstaculo[numeroObstaculos];
         numeroObstaculos = entrada.nextInt();
         if (numeroObstaculos > 0) {
-            obstaculos=new Obstaculo[numeroObstaculos];
+            obstaculos = new Obstaculo[numeroObstaculos];
             System.out.println("Las celdas inician en 1 en la esquina superior izquierda y\n"
                     + "aumentan positivamente hacia la derecha y hacia abajo");
             for (int i = 0; i < numeroObstaculos; i++) {
@@ -149,9 +155,9 @@ public class Tablero extends JPanel implements ActionListener {
                 System.out.println("Ingrese la y de la coordenada inicial: ");
                 int yInicial = entrada.nextInt();
                 System.out.println("Ingrese la x de la coordenada final: ");
-                int xFinal =entrada.nextInt();
+                int xFinal = entrada.nextInt();
                 System.out.println("Ingrese la y de la coordenada final: ");
-                int yFinal =entrada.nextInt();
+                int yFinal = entrada.nextInt();
 
                 //generando los rangos de pixeles en los que no se puede mover
                 int xMenor = 0;
@@ -172,27 +178,28 @@ public class Tablero extends JPanel implements ActionListener {
                     yMenor = yInicial;
                     yMayor = yFinal;
                 }
-                Punto ini = new Punto(xMenor*30,yMenor*30);
-                Punto fi = new Punto(xMayor*30,yMayor*30);
-                Obstaculo obs =new Obstaculo(ini,fi);
-                obstaculos[i]= obs;
-                                
+                Punto ini = new Punto(xMenor * 30, yMenor * 30);
+                Punto fi = new Punto(xMayor * 30, yMayor * 30);
+                Obstaculo obs = new Obstaculo(ini, fi);
+                obstaculos[i] = obs;
+
                 //cambiando las galletas a zonas no caminables
                 for (int j = xMenor; j <= xMayor; j++) {
                     for (int k = yMenor; k <= yMayor; k++) {
-                        Punto coordenada=coordenadas[j][k];
-                        coordenada.caminable=false;
-                        coordenada.galleta=false;
-                        coordenada.obstaculo=true;
+                        Punto coordenada = coordenadas[j][k];
+                        coordenada.caminable = false;
+                        coordenada.galleta = false;
+                        coordenada.obstaculo = true;
+                        comida--;
                     }
                 }
 
             }
         }
         //creando jugadores
-        jugadores[0] = new Jugador(1,color1L, this);
+        jugadores[0] = new Jugador(1, color1L, this);
         if (numeroJugadores == 2) {
-            jugadores[1] = new Jugador(2,color2L, this);
+            jugadores[1] = new Jugador(2, color2L, this);
         }
         //aniadiendo listeners de controles para los jugadores
         addKeyListener(new listenerJugador1());
@@ -201,77 +208,156 @@ public class Tablero extends JPanel implements ActionListener {
         }
         //generando spawns de fantasmas
         spawnsFantasmas = new Punto[2];
-        int xAux = ((int)(Math.random()*(this.numCoordenadasX-0+1)+0))*30;
-        int yAux = ((int)(Math.random()*(this.numCoordenadasY-0+1)+0))*30;
-        this.spawnsFantasmas[0]=new Punto(xAux,yAux);
-         xAux = ((int)(Math.random()*(this.numCoordenadasX-0+1)+0))*30;
-         yAux = ((int)(Math.random()*(this.numCoordenadasY-0+1)+0))*30;
-        this.spawnsFantasmas[1]=new Punto(xAux,yAux);
-        
+        int xAux = ((int) (Math.random() * (this.numCoordenadasX - 0 + 1) + 0)) * 30;
+        int yAux = ((int) (Math.random() * (this.numCoordenadasY - 0 + 1) + 0)) * 30;
+        this.spawnsFantasmas[0] = new Punto(xAux, yAux);
+        xAux = ((int) (Math.random() * (this.numCoordenadasX - 0 + 1) + 0)) * 30;
+        yAux = ((int) (Math.random() * (this.numCoordenadasY - 0 + 1) + 0)) * 30;
+        this.spawnsFantasmas[1] = new Punto(xAux, yAux);
+
         System.out.println("Que rango de fantasmas deben de aparecer en el mapa?");
         System.out.println("Escriba limite inferior del rango:");
-        this.limiteInferiorFantasmas=entrada.nextInt();
+        this.limiteInferiorFantasmas = entrada.nextInt();
         System.out.println("Escriba limite superior del rango:");
-        this.limiteSuperiorFantasmas=entrada.nextInt();
-        
-        this.numeroFantasmas=((int)(Math.random()*(limiteSuperiorFantasmas-limiteInferiorFantasmas+1)+limiteInferiorFantasmas));
+        this.limiteSuperiorFantasmas = entrada.nextInt();
+
+        this.numeroFantasmas = ((int) (Math.random() * (limiteSuperiorFantasmas - limiteInferiorFantasmas + 1) + limiteInferiorFantasmas));
         fantasmas = new Fantasma[numeroFantasmas];
         for (int i = 0; i < numeroFantasmas; i++) {
-            fantasmas[i]=new Fantasma(this);
+            fantasmas[i] = new Fantasma(this);
         }
-        
-        
+
     }
 
     //-----------------------------calculando todos los movimientos y dibujandolos--------------------------------------
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        //dibujando coordenadas
-        for (int i = 0; i < numCoordenadasX; i++) {
-            for (int j = 0; j < numCoordenadasY; j++) {
-                Punto coordenada = coordenadas[i][j];
-                //viendo que tipo de punto es
-                if (coordenada.galleta) {
-                     g.drawImage(coordenada.imagen, coordenada.x, coordenada.y,15,15, this);
+
+        if (!partidaFinalizada) {
+            //verificando colisiones
+            for (int i = 0; i < jugadores.length; i++) {
+                Jugador jugador = jugadores[i];
+                Pacman pacman = jugador.pacman;
+
+                for (int j = pacman.x; j < pacman.x + pacman.ancho; j++) {
+                    for (int k = pacman.y; k < pacman.y + pacman.alto; k++) {
+                        //buscando colisiones con galletas 
+                        if ((j % 30 == 0) && (k % 30 == 0)) {
+                            if (k / 30 < 18) {
+                                Punto punto = coordenadas[j / 30][k / 30];
+                                if (punto.galleta) {
+                                    jugador.puntaje = jugador.puntaje + punto.puntaje;
+                                    punto.galleta = false;
+                                    comida--;
+                                } else if (punto.bolaDePoder) {
+                                    jugador.puntaje = jugador.puntaje + punto.puntaje;
+                                    punto.bolaDePoder = false;
+                                    comida--;
+                                }
+                            }
+
+                        }
+
+                        //buscando colisiones con fantasmas
+                        for (int l = 0; l < fantasmas.length; l++) {
+                            Fantasma fantasma = fantasmas[l];
+
+                            int xMenor = fantasma.x;
+
+                            int yMenor = fantasma.y;
+
+                            int xMayor = xMenor + fantasma.ancho;
+
+                            int yMayor = yMenor + fantasma.alto;
+
+                            for (int m = pacman.x; m <= pacman.x + pacman.ancho; m++) {
+                                for (int n = pacman.y; n <= pacman.y + pacman.alto; n++) {
+                                    if ((m >= xMenor - 1) && (n >= yMenor - 1)) {
+                                        if ((m <= xMayor) && (n <= yMayor)) {
+                                            jugador.morir();
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
+            //dibujando Galletas
+            for (int i = 0; i < numCoordenadasX; i++) {
+                for (int j = 0; j < numCoordenadasY; j++) {
+                    Punto coordenada = coordenadas[i][j];
+                    //viendo que tipo de punto es
+                    if (coordenada.galleta) {
+                        //descomentar si se quiere la imagen de galleta
+                        //g.drawImage(coordenada.imagen, coordenada.x, coordenada.y,15,15, this);
+                        g.fillOval(coordenada.x, coordenada.y, 10, 10);
+                    } else if (coordenada.bolaDePoder) {
+                        //descomentar si se quiere la imagen de galleta
+                        //g.drawImage(coordenada.imagen, coordenada.x, coordenada.y,15,15, this);
+                        g.fillOval(coordenada.x, coordenada.y, 20, 20);
+                    }
+                }
+            }
+            //dibujando bordes de los obstaculos
+            for (int i = 0; i < obstaculos.length; i++) {
+                int xMenor = (obstaculos[i]).inicio.x;
+                int yMenor = (obstaculos[i]).inicio.y;
+                int xMayor = (obstaculos[i]).fin.x + 25;
+                int yMayor = (obstaculos[i]).fin.y + 25;
+                g.setColor(Color.GREEN);
+                //izquierda
+                g.drawLine(xMenor, yMenor, xMenor, yMayor);
+                //derecha
+                g.drawLine(xMayor, yMenor, xMayor, yMayor);
+                //arriba
+                g.drawLine(xMenor, yMenor, xMayor, yMenor);
+                //abajo
+                g.drawLine(xMenor, yMayor, xMayor, yMayor);
+            }
+            //recorriendo todos los pacmans moviendolos y dibujandolos
+            for (int i = 0; i < jugadores.length; i++) {
+                Pacman pacman = jugadores[i].pacman;
+                pacman.mover();
+                g.drawImage(pacman.imagen, pacman.x, pacman.y, this);
+            }
+            //recorriendo todos los fantasmas moviendolos y dibujandolos
+            for (int i = 0; i < numeroFantasmas; i++) {
+                Fantasma fantasma = fantasmas[i];
+                fantasma.mover();
+                g.drawImage(fantasma.imagen, fantasma.x, fantasma.y, this);
+            }
+            //contabilizando la cantidad de galletas
+            if (comida==0) {
+                finalizarPartida();
+            }
+            //contabilizando los frames de actualizacion
+            if (this.frames == 150) {
+                this.frames = 0;
+            } else {
+                this.frames++;
+            }
+
+        } else {
+            String mensaje = "Partida finalizada.";
+            //eligiendo al ganador
+            int ganador = 0;
+            if (jugadores.length == 2) {
+                if (comida == 0) {
+                    if (jugadores[0].puntaje < jugadores[1].puntaje) {
+                        ganador=1;
+                        mensaje = "Partida finalizada:\n El ganador fue: " +jugadores[ganador].numeroJugador +"\nCon un puntaje de: "+jugadores[ganador].puntaje;
+                    }
+                }
+            }
+            else{
+                mensaje = "Partida finalizada:\n El ganador fue: " +jugadores[ganador].numeroJugador +"\nCon un puntaje de: "+jugadores[ganador].puntaje;
+            }
+
+            g.drawString(mensaje, 810 / 2, 300);
         }
-        //dibujando bordes de los obstaculos
-        for (int i = 0; i < obstaculos.length; i++) {
-            int xMenor = (obstaculos[i]).inicio.x;
-            int yMenor = (obstaculos[i]).inicio.y;
-            int xMayor = (obstaculos[i]).fin.x+25;
-            int yMayor = (obstaculos[i]).fin.y+25;
-            g.setColor(Color.GREEN);
-            //izquierda
-            g.drawLine(xMenor, yMenor, xMenor, yMayor);
-            //derecha
-            g.drawLine(xMayor, yMenor, xMayor, yMayor);
-            //arriba
-            g.drawLine(xMenor, yMenor, xMayor, yMenor);
-            //abajo
-            g.drawLine(xMenor, yMayor, xMayor, yMayor);
-        }
-        //recorriendo todos los pacmans moviendolos y dibujandolos
-        for (int i = 0; i < jugadores.length; i++) {
-            Pacman pacman = jugadores[i].pacman;
-            pacman.mover();
-            g.drawImage(pacman.imagen, pacman.x, pacman.y, this);
-        }
-        //recorriendo todos los fantasmas moviendolos y dibujandolos
-        for (int i = 0; i < numeroFantasmas; i++) {
-            Fantasma fantasma = fantasmas[i];
-            fantasma.mover();
-            g.drawImage(fantasma.imagen, fantasma.x, fantasma.y, this);
-        }
-        //contabilizando los frames de actualizacion
-        if (this.frames ==200) {
-            this.frames = 0;
-        }
-        else{
-            this.frames ++;
-        }
-        
+
     }
 
     public void actualizarTablero() {
@@ -285,8 +371,11 @@ public class Tablero extends JPanel implements ActionListener {
         actualizarTablero();
 
     }
-    
-    
+    //----------------------------------------------finalizar partida---------------------------------------------------------------------------
+
+    public void finalizarPartida() {
+        partidaFinalizada = true;
+    }
 
     //-------------------------------------------------------------------------controles--------------------------------------------------------
     private class listenerJugador1 extends java.awt.event.KeyAdapter {
@@ -370,5 +459,5 @@ public class Tablero extends JPanel implements ActionListener {
 
         }
     }
-     
+
 }

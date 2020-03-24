@@ -24,5 +24,14 @@ public class Jugador {
         this.puntaje=0;
         this.tablero = tablero;
     }
+    public void morir(){
+        this.numeroVidas--;
+        if(numeroVidas>0){
+            this.pacman.spawn();
+        }
+        else{
+            tablero.finalizarPartida();
+        }
+    }
     
 }

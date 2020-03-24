@@ -16,6 +16,8 @@ public class Pacman {
 
     int x;
     int y;
+    int ancho;
+    int alto;
     Image imagen;
 
     boolean moverArriba = false;
@@ -41,6 +43,8 @@ public class Pacman {
         this.inferiory = tablero.inferiory;
         this.velocidad = 4;
         this.color = color;
+        this.alto=22;
+        this.ancho=22;
         spawn();
     }
     

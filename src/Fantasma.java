@@ -28,6 +28,9 @@ public class Fantasma {
 
     int x;
     int y;
+    int ancho;
+    int alto;
+    
     int moviFantasma;
     Image imagen;
     Tablero tablero;
@@ -42,6 +45,8 @@ public class Fantasma {
         this.velocidad = 4;
         this.imagen = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma1.gif")).getImage();
         this.moviFantasma=((int) (Math.random() * (200 - 0 + 1) + 0));
+        this.alto=22;
+        this.ancho=22;
         spawn();
     }
 
@@ -77,7 +82,7 @@ public class Fantasma {
                     moverDerecha = true;
                     break;
             }
-             this.moviFantasma=((int) (Math.random() * (200 - 0 + 1) + 0));
+             this.moviFantasma=((int) (Math.random() * (150 - 0 + 1) + 0));
         }
         //eligiendo direccion aleatoria si no se esta moviendo(si choco contra una pared)
         if (!moverIzquierda && !moverDerecha && !moverAbajo && !moverArriba) {
