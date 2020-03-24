@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 
 /**
  *
- * @author Angy la mejor del mundo
+ * @author Angy 
  */
 public class Punto {
     //atributos del punto
