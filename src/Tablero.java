@@ -21,22 +21,28 @@ public class Tablero extends JPanel implements ActionListener {
 
     //mapa 27x20 = 540 puntos con atributos de obstaculo,caminable,moneda
     Punto[][] coordenadas; 
+    
+    //arreglo de obstaculos
+    Obstaculo[] obstaculos;
 
-    //fila de cambios en puntos
-    Queue<String> filaCambios = new LinkedList<String>();
 
     Scanner entrada = new Scanner(System.in);
 
-    Image fantasma1Img = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma1.gif")).getImage();
-    Image fantasma2Img = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma2.gif")).getImage();
-
     Jugador[] jugadores;
-    Fantasma fantasma1;
-    Fantasma fantasma2;
+    
+    Fantasma[] fantasmas;
+    
+    Punto[] spawnsFantasmas;
+    
     Timer timer;
     //definiendo los limites del tablero ( el cual es de tamaño 810, 600 definido en la clase snake)
 //    int superiorx = 780;
 //    int superiory = 550;
+    
+    int limiteInferiorFantasmas;
+    int limiteSuperiorFantasmas;
+    int numeroFantasmas;
+    
     int superiorx ;
     int superiory ;
     int inferiory = 0;
@@ -53,6 +59,16 @@ public class Tablero extends JPanel implements ActionListener {
         numCoordenadasY = y/30;
         coordenadas= new Punto[numCoordenadasX][numCoordenadasY];
         //---------------------------------------------------preguntando los paramentros iniciales------------------------------------------------------------
+        
+        initialSpawn();
+        setFocusable(true);
+        requestFocusInWindow();
+
+
+        timer = new Timer(50, this);
+        timer.start();
+    }
+    public void initialSpawn(){
         int numeroJugadores = 1;
         while (true) {
             System.out.println("Ingrese la cantidad de jugadores(1-2)");
@@ -103,26 +119,10 @@ public class Tablero extends JPanel implements ActionListener {
                 }
             }
         }
-        //------------------------------------------------------------generando mapa-------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------generando mapa-------------------------------------------------------------------------------------------------
         
-        
-        //creando jugadores
-        jugadores[0] = new Jugador(1, 30, 30, color1L, this);
-        if (numeroJugadores == 2) {
-            jugadores[1] = new Jugador(2, 60, 60, color2L, this);
-        }
-
         setBackground(Color.BLACK);
-
-//        snake1.push(new Punto(30, 30));
-//        snake1.push(new Punto(40, 30));
-        //aniadiendo listeners de controles para los jugadores
-        addKeyListener(new listenerJugador1());
-        if (numeroJugadores == 2) {
-            addKeyListener(new listenerJugador2());
-        }
-
-        //generando todos los puntos como galletas
+       //generando todos los puntos como galletas
         for (int i = 0; i < numCoordenadasX; i++) {
             for (int j = 0; j < numCoordenadasY; j++) {
                 Punto coordenada = new Punto(i*30, j*30);
@@ -133,8 +133,10 @@ public class Tablero extends JPanel implements ActionListener {
         // creando obstaculos
         System.out.println("Ingrese la cantidad de obstaculos que desea: ");
         int numeroObstaculos = 0;
+        obstaculos=new Obstaculo[numeroObstaculos];
         numeroObstaculos = entrada.nextInt();
         if (numeroObstaculos > 0) {
+            obstaculos=new Obstaculo[numeroObstaculos];
             System.out.println("Las celdas inician en 1 en la esquina superior izquierda y\n"
                     + "aumentan positivamente hacia la derecha y hacia abajo");
             for (int i = 0; i < numeroObstaculos; i++) {
@@ -148,7 +150,7 @@ public class Tablero extends JPanel implements ActionListener {
                 System.out.println("Ingrese la y de la coordenada final: ");
                 int yFinal =entrada.nextInt();
 
-                //generando los puntos
+                //generando los rangos de pixeles en los que no se puede mover
                 int xMenor = 0;
                 int xMayor = 0;
                 int yMenor = 0;
@@ -167,63 +169,15 @@ public class Tablero extends JPanel implements ActionListener {
                     yMenor = yInicial;
                     yMayor = yFinal;
                 }
-
-                //generando L
-//                for (int j = xMenor; j <= xMayor; j++) {
-//                    String tupla = "(" + j + "," + yMenor + ")";
-//                    if (coordenadas.containsKey(tupla)) {
-//                        Punto punto = coordenadas.get(tupla);
-//                        punto.caminable = false;
-//                        punto.galleta = false;
-//                        punto.obstaculo = true;
-//                        filaCambios.add(tupla);
-//                    } else {
-//                        Punto punto = new Punto(j, yMenor);
-//                        punto.caminable = false;
-//                        punto.galleta = false;
-//                        punto.obstaculo = true;
-//                        filaCambios.add(tupla);
-//                    }
-//                }
-//                //generando S
-//                for (int j = yMenor; j <= yMayor; j++) {
-//                    String tupla = "(" + xMenor + "," + j + ")";
-//
-//                    if (coordenadas.containsKey(tupla)) {
-//                        Punto punto = coordenadas.get(tupla);
-//                        punto.caminable = false;
-//                        punto.galleta = false;
-//                        punto.obstaculo = true;
-//                        filaCambios.add(tupla);
-//                    } else {
-//                        Punto punto = new Punto(xMenor, j);
-//                        punto.caminable = false;
-//                        punto.galleta = false;
-//                        punto.obstaculo = true;
-//                        filaCambios.add(tupla);
-//                    }
-//                }//generando P
-//                for (int j = xMenor; j <= xMayor; j++) {
-//                    String tupla = "(" + j + "," + yMayor + ")";
-//                    if (coordenadas.containsKey(tupla)) {
-//                        Punto punto = coordenadas.get(tupla);
-//                        punto.caminable = false;
-//                        punto.galleta = false;
-//                        punto.obstaculo = true;
-//                        filaCambios.add(tupla);
-//                    } else {
-//                        Punto punto = new Punto(j, yMayor);
-//                        punto.caminable = false;
-//                        punto.galleta = false;
-//                        punto.obstaculo = true;
-//                        filaCambios.add(tupla);
-//                    }
-//
-//                }
+                Punto ini = new Punto(xMenor*30,yMenor*30);
+                Punto fi = new Punto(xMayor*30,yMayor*30);
+                Obstaculo obs =new Obstaculo(ini,fi);
+                obstaculos[i]= obs;
+                                
                 //cambiando las galletas a zonas no caminables
                 for (int j = xMenor; j <= xMayor; j++) {
                     for (int k = yMenor; k <= yMayor; k++) {
-                        Punto coordenada=coordenadas[i][j];
+                        Punto coordenada=coordenadas[j][k];
                         coordenada.caminable=false;
                         coordenada.galleta=false;
                         coordenada.obstaculo=true;
@@ -232,40 +186,85 @@ public class Tablero extends JPanel implements ActionListener {
 
             }
         }
-
-        setFocusable(true);
-        requestFocusInWindow();
-
-        fantasma1 = new Fantasma(50, 250, fantasma1Img);
-        fantasma2 = new Fantasma(150, 450, fantasma2Img);
-
-        timer = new Timer(50, this);
-        timer.start();
+        //creando jugadores
+        jugadores[0] = new Jugador(1,color1L, this);
+        if (numeroJugadores == 2) {
+            jugadores[1] = new Jugador(2,color2L, this);
+        }
+        //aniadiendo listeners de controles para los jugadores
+        addKeyListener(new listenerJugador1());
+        if (numeroJugadores == 2) {
+            addKeyListener(new listenerJugador2());
+        }
+        //generando spawns de fantasmas
+        spawnsFantasmas = new Punto[2];
+        int xAux = ((int)(Math.random()*(this.numCoordenadasX-0+1)+0))*30;
+        int yAux = ((int)(Math.random()*(this.numCoordenadasY-0+1)+0))*30;
+        this.spawnsFantasmas[0]=new Punto(xAux,yAux);
+         xAux = ((int)(Math.random()*(this.numCoordenadasX-0+1)+0))*30;
+         yAux = ((int)(Math.random()*(this.numCoordenadasY-0+1)+0))*30;
+        this.spawnsFantasmas[1]=new Punto(xAux,yAux);
+        
+        System.out.println("Que rango de fantasmas deben de aparecer en el mapa?");
+        System.out.println("Escriba limite inferior del rango:");
+        this.limiteInferiorFantasmas=entrada.nextInt();
+        System.out.println("Escriba limite superior del rango:");
+        this.limiteSuperiorFantasmas=entrada.nextInt();
+        
+        this.numeroFantasmas=((int)(Math.random()*(limiteSuperiorFantasmas-limiteInferiorFantasmas+1)+limiteInferiorFantasmas));
+        fantasmas = new Fantasma[numeroFantasmas];
+        for (int i = 0; i < numeroFantasmas; i++) {
+            fantasmas[i]=new Fantasma(this);
+        }
+        
+        
     }
 
     //-----------------------------calculando todos los movimientos y dibujandolos--------------------------------------
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        //recorriendo todos los pacmans moviendolos y dibujandolos
-        for (int i = 0; i < jugadores.length; i++) {
-            Pacman pacman = jugadores[i].pacman;
-            pacman.mover();
-            g.drawImage(pacman.imagen, pacman.x, pacman.y, this);
-        }
+        
         //dibujando coordenadas
         for (int i = 0; i < numCoordenadasX; i++) {
             for (int j = 0; j < numCoordenadasY; j++) {
                 Punto coordenada = coordenadas[i][j];
                 //viendo que tipo de punto es
                 if (coordenada.galleta) {
-                     g.drawImage(fantasma1.imagen, coordenada.x, coordenada.y, this);
+                     g.drawImage(coordenada.imagen, coordenada.x, coordenada.y,15,15, this);
                 }
             }
         }
         
-        g.drawImage(fantasma1.imagen, fantasma1.x, fantasma1.y, this);
-        g.drawImage(fantasma2.imagen, fantasma2.x, fantasma2.y, this);
-
+        //dibujando bordes de los obstaculos
+        for (int i = 0; i < obstaculos.length; i++) {
+            int xMenor = (obstaculos[i]).inicio.x;
+            int yMenor = (obstaculos[i]).inicio.y;
+            int xMayor = (obstaculos[i]).fin.x+25;
+            int yMayor = (obstaculos[i]).fin.y+25;
+            g.setColor(Color.GREEN);
+            //izquierda
+            g.drawLine(xMenor, yMenor, xMenor, yMayor);
+            //derecha
+            g.drawLine(xMayor, yMenor, xMayor, yMayor);
+            //arriba
+            g.drawLine(xMenor, yMenor, xMayor, yMenor);
+            //abajo
+            g.drawLine(xMenor, yMayor, xMayor, yMayor);
+        }
+        
+        
+        //recorriendo todos los pacmans moviendolos y dibujandolos
+        for (int i = 0; i < jugadores.length; i++) {
+            Pacman pacman = jugadores[i].pacman;
+            pacman.mover();
+            g.drawImage(pacman.imagen, pacman.x, pacman.y, this);
+        }
+        
+        //recorriendo todos los fantasmas
+        for (int i = 0; i < numeroFantasmas; i++) {
+            Fantasma fantasma = fantasmas[i];
+            g.drawImage(fantasma.imagen, fantasma.x, fantasma.y, this);
+        }
     }
 
     public void actualizarTablero() {
@@ -279,6 +278,8 @@ public class Tablero extends JPanel implements ActionListener {
         actualizarTablero();
 
     }
+    
+    
 
     //controles
     private class listenerJugador1 extends java.awt.event.KeyAdapter {
@@ -362,4 +363,5 @@ public class Tablero extends JPanel implements ActionListener {
 
         }
     }
+     
 }

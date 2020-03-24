@@ -1,5 +1,6 @@
 
 import java.awt.Image;
+import javax.swing.ImageIcon;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,10 +16,19 @@ public class Fantasma {
     int x;
     int y;
     Image imagen;
-
-    public Fantasma(int x, int y, Image imagen) {
-        this.x = x;
-        this.y = y;
-        this.imagen = imagen;
+    Tablero tablero;
+    Boolean vivo;
+    public Fantasma(Tablero tablero) {
+        this.tablero=tablero;
+        this.imagen =  new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma1.gif")).getImage();
+        spawn();
+    }
+    public void spawn(){
+        vivo=true;
+        int inicio=0;
+        int fin =1;
+        int spawnAux = ((int)(Math.random()*(fin-inicio+1)+inicio));
+        this.x=(tablero.spawnsFantasmas[spawnAux]).x;
+        this.y=(tablero.spawnsFantasmas[spawnAux]).y;
     }
 }

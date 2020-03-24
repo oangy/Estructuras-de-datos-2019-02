@@ -14,8 +14,8 @@ import javax.swing.JFrame;
  * @author Usuario
  */
 public class Snake extends JFrame {
-    int x = 810-15;
-    int y = 600-15-10;
+    int x = 810-15-8;
+    int y = 600-15-10-10;
     public Snake() {
 
         add(new Tablero(x,y));

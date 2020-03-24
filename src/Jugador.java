@@ -16,10 +16,13 @@ public class Jugador {
     int numeroJugador;
     int puntaje;
     int numeroVidas;
-    public Jugador(int numero,int x, int y,String color,Tablero tablero){
+    Tablero tablero;
+    public Jugador(int numero,String color,Tablero tablero){
         this.numeroJugador=numero;
-        this.pacman=new Pacman(x, y,color,tablero);
+        this.pacman=new Pacman(color,tablero);
         this.numeroVidas=3;
         this.puntaje=0;
+        this.tablero = tablero;
     }
+    
 }
