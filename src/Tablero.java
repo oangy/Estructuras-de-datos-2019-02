@@ -68,6 +68,8 @@ public class Tablero extends JPanel implements ActionListener {
     int comida;
     int numeroBolasPoder;
 
+    int numeroPoderesActivados = 0;
+
     Image imagenFantasma1;
     Image imagenFantasma2;
 
@@ -110,7 +112,7 @@ public class Tablero extends JPanel implements ActionListener {
         String color1L = "amarillo";
         String color2L = "amarillo";
         while (true) {
-            System.out.println("Elije entre estos colores JUGADOR 1:\n1=amarillo\n2=cafe\n3=rosado");// \n es un codigo para dar un enter en el sstring
+            System.out.println("Elije entre estos colores JUGADOR 1:\n1=amarillo\n2=cafe\n3=rosado");// \n es un codigo para dar un enter en el string
             color1 = entrada.nextInt();
             if (color1 == 1 || color1 == 2 || color1 == 3) {
                 switch (color1) {
@@ -159,7 +161,7 @@ public class Tablero extends JPanel implements ActionListener {
 
         setBackground(Color.BLACK);
         comida = 0;
-        //generando todos los puntos como galletas
+        //-----------------------------------generando todos los puntos como galletas
         for (int i = 0; i < numCoordenadasX; i++) {
             for (int j = 0; j < numCoordenadasY; j++) {
                 Punto coordenada = new Punto(i * 30, j * 30);
@@ -168,7 +170,7 @@ public class Tablero extends JPanel implements ActionListener {
                 comida++;
             }
         }
-        // creando obstaculos
+        //---------------------------------------------------- creando obstaculos
         System.out.println("Ingrese la cantidad de obstaculos que desea: ");
         int numeroObstaculos = 0;
         obstaculos = new Obstaculo[numeroObstaculos];
@@ -212,7 +214,7 @@ public class Tablero extends JPanel implements ActionListener {
                 Obstaculo obs = new Obstaculo(ini, fi);
                 obstaculos[i] = obs;
 
-                //cambiando las galletas a zonas no caminables
+                //cambiando las galletas a puntos vacios
                 for (int j = xMenor; j <= xMayor; j++) {
                     for (int k = yMenor; k <= yMayor; k++) {
                         Punto coordenada = coordenadas[j][k];
@@ -262,7 +264,7 @@ public class Tablero extends JPanel implements ActionListener {
         System.out.println("Escriba limite superior del rango:");
         this.limiteSuperiorBolasPoder = entrada.nextInt();
         //generando bolas de poder
-        this.numeroBolasPoder = ((int) (Math.random() * (limiteSuperiorBolasPoder - limiteInferiorBolasPoder + 1) + limiteInferiorBolasPoder))-1;
+        this.numeroBolasPoder = ((int) (Math.random() * (limiteSuperiorBolasPoder - limiteInferiorBolasPoder + 1) + limiteInferiorBolasPoder)) - 1;
         int generadas = 0;
         while (generadas <= this.numeroBolasPoder) {
             int limiteSuperiorRangoX = coordenadas.length - 1;
@@ -304,9 +306,11 @@ public class Tablero extends JPanel implements ActionListener {
                                     punto.bolaDePoder = false;
                                     comida--;
 
+                                    if (!conPoder) {
+                                        this.velocidadFantasmas = this.velocidadFantasmas / 2;
+                                        this.velocidadPacmans = this.velocidadPacmans * 2;
+                                    }
                                     conPoder = true;
-                                    this.velocidadFantasmas -= 1;
-                                    this.velocidadPacmans += 1;
 
                                     //vomitando las galletas de los rivales
                                     int puntajePorGalleta = (coordenadas[0][0]).puntaje;
@@ -370,7 +374,12 @@ public class Tablero extends JPanel implements ActionListener {
                                         //matando al fantasma (teleportandolo a un lugar fuera del mapa)
                                         fantasma.x = this.superiorx + 100;
                                         fantasma.y = this.superiory + numeroFantasmasMuertos + 30;
-                                        fantasma.vivo=false;
+                                        fantasma.vivo = false;
+                                        jugador.numeroFantasmasAsesinadosFriamente++;
+                                        if (jugador.numeroFantasmasAsesinadosFriamente%3==0) {
+                                            System.out.println("Jugador "+jugador.numeroJugador+" ganaste un nuevo pacman.");
+                                            jugador.numeroVidas++;
+                                        }
                                     } else {
                                         jugador.morir();
                                     }
@@ -385,6 +394,7 @@ public class Tablero extends JPanel implements ActionListener {
                 }
             }
             //dibujando Galletas
+            g.setColor(Color.ORANGE);
             for (int i = 0; i < numCoordenadasX; i++) {
                 for (int j = 0; j < numCoordenadasY; j++) {
                     Punto coordenada = coordenadas[i][j];
@@ -494,15 +504,15 @@ public class Tablero extends JPanel implements ActionListener {
                 if (conPoder) {
                     if (tiempoConPoder == 8000) {
 
-                        velocidadFantasmas -= 1;
-                        velocidadPacmans += 1;
+                        velocidadFantasmas = velocidadFantasmas * 2;
+                        velocidadPacmans = velocidadPacmans / 2;
 
                         //colocando el juego en estado sin poder
                         conPoder = false;
                         tiempoConPoder = 0;
 
                     } else {
-                        tiempoConPoder+=10;
+                        tiempoConPoder += 10;
                     }
                 }
             }

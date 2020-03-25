@@ -101,8 +101,8 @@ public class Pacman {
             int xMayor = (int) (tablero.obstaculos[i]).fin.x;
             int yMayor = (int) (tablero.obstaculos[i]).fin.y;
 
-            if ((x >= xMenor-18) && (y >= yMenor-18)) {
-                if ((x <= xMayor+30) && (y <= yMayor+30)) {
+            if ((x >= xMenor-alto) && (y >= yMenor-alto)) {
+                if ((x <= xMayor+alto) && (y <= yMayor+alto)) {
                     if (moverArriba) {
                         y=y+tablero.velocidadPacmans;
                         moverArriba=false;

@@ -17,11 +17,13 @@ public class Jugador {
     int puntaje;
     int numeroVidas;
     Tablero tablero;
+    int numeroFantasmasAsesinadosFriamente;
     public Jugador(int numero,String color,Tablero tablero){
         this.numeroJugador=numero;
         this.pacman=new Pacman(color,tablero);
         this.numeroVidas=3;
         this.puntaje=0;
+        numeroFantasmasAsesinadosFriamente=0;
         this.tablero = tablero;
     }
     public void morir(){
