@@ -10,12 +10,15 @@ import java.util.Deque;
 import java.util.Scanner;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import javax.swing.Timer;
+import java.util.Timer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Tablero extends JPanel implements ActionListener {
 
@@ -36,17 +39,21 @@ public class Tablero extends JPanel implements ActionListener {
     Punto[] spawnsFantasmas;
 
     Timer timer;
-    //definiendo los limites del tablero ( el cual es de tamaño 810, 600 definido en la clase snake)
-//    int superiorx = 780;
-//    int superiory = 550;
+    //tiempos en ms
+    int timepoPartida = 0;
+    int tiempoConPoder = 0;
+    Boolean conPoder = false;
 
     //contador global de actualizaciones de dibujo que inicia en 0 y se reinicia en 150 (utilizado para el movimiento aleatorio de los fantasmas)
     int frames;
 
+    int velocidadFantasmas;
+    int velocidadPacmans;
+
     int limiteInferiorFantasmas;
     int limiteSuperiorFantasmas;
     int numeroFantasmas;
-    
+    int numeroFantasmasMuertos = 0;
     int limiteInferiorBolasPoder;
     int limiteSuperiorBolasPoder;
 
@@ -57,27 +64,33 @@ public class Tablero extends JPanel implements ActionListener {
 
     int numCoordenadasX;
     int numCoordenadasY;
-    
+
     int comida;
-    private int numeroBolasPoder;
+    int numeroBolasPoder;
+
+    Image imagenFantasma1;
+    Image imagenFantasma2;
 
     public Tablero(int x, int y) {
-        
-        
+        timer = new Timer();
         superiorx = x - 30 - 10;
         superiory = y - 30 - 15 - 15;
         numCoordenadasX = x / 30;
         numCoordenadasY = y / 30;
         coordenadas = new Punto[numCoordenadasX][numCoordenadasY];
-        //---------------------------------------------------preguntando los paramentros iniciales------------------------------------------------------------
+        velocidadPacmans = 4;
+        velocidadFantasmas = 4;
+
+        imagenFantasma1 = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma1.gif")).getImage();
+        imagenFantasma2 = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma2.gif")).getImage();
 
         initialSpawn();
+        controlador();
         setFocusable(true);
         requestFocusInWindow();
 
-        timer = new Timer(50, this);
-        timer.start();
     }
+//------------------------------------------------------------------------------preguntando parametros iniciales y generando todo el mapa-----------------------------------------------------------------
 
     public void initialSpawn() {
         int numeroJugadores = 1;
@@ -100,12 +113,18 @@ public class Tablero extends JPanel implements ActionListener {
             System.out.println("Elije entre estos colores JUGADOR 1:\n1=amarillo\n2=cafe\n3=rosado");// \n es un codigo para dar un enter en el sstring
             color1 = entrada.nextInt();
             if (color1 == 1 || color1 == 2 || color1 == 3) {
-                if (color1 == 1) {
-                    color1L = "amarillo";
-                } else if (color1 == 2) {
-                    color1L = "cafe";
-                } else if (color1 == 3) {
-                    color1L = "rosado";
+                switch (color1) {
+                    case 1:
+                        color1L = "amarillo";
+                        break;
+                    case 2:
+                        color1L = "cafe";
+                        break;
+                    case 3:
+                        color1L = "rosado";
+                        break;
+                    default:
+                        break;
                 }
                 break;
             } else {
@@ -117,12 +136,18 @@ public class Tablero extends JPanel implements ActionListener {
                 System.out.println("Elije entre estos colores JUGADOR 2:\n1=azul\n2=rojo\n3=verde");// \n es un codigo para dar un enter en el sstring
                 color2 = entrada.nextInt();
                 if (color2 == 1 || color2 == 2 || color2 == 3) {
-                    if (color2 == 1) {
-                        color2L = "azul";
-                    } else if (color2 == 2) {
-                        color2L = "rojo";
-                    } else if (color2 == 3) {
-                        color2L = "verde";
+                    switch (color2) {
+                        case 1:
+                            color2L = "azul";
+                            break;
+                        case 2:
+                            color2L = "rojo";
+                            break;
+                        case 3:
+                            color2L = "verde";
+                            break;
+                        default:
+                            break;
                     }
                     break;
                 } else {
@@ -133,7 +158,7 @@ public class Tablero extends JPanel implements ActionListener {
 //----------------------------------------------------------------generando mapa-------------------------------------------------------------------------------------------------
 
         setBackground(Color.BLACK);
-        comida=0;
+        comida = 0;
         //generando todos los puntos como galletas
         for (int i = 0; i < numCoordenadasX; i++) {
             for (int j = 0; j < numCoordenadasY; j++) {
@@ -230,26 +255,25 @@ public class Tablero extends JPanel implements ActionListener {
         for (int i = 0; i < numeroFantasmas; i++) {
             fantasmas[i] = new Fantasma(this);
         }
-        
+
         System.out.println("Que rango de BOLAS DE PODER deben de aparecer en el mapa?");
         System.out.println("Escriba limite inferior del rango:");
         this.limiteInferiorBolasPoder = entrada.nextInt();
         System.out.println("Escriba limite superior del rango:");
         this.limiteSuperiorBolasPoder = entrada.nextInt();
         //generando bolas de poder
-        this.numeroBolasPoder = ((int) (Math.random() * (limiteSuperiorBolasPoder - limiteInferiorBolasPoder + 1) + limiteInferiorBolasPoder));
+        this.numeroBolasPoder = ((int) (Math.random() * (limiteSuperiorBolasPoder - limiteInferiorBolasPoder + 1) + limiteInferiorBolasPoder))-1;
         int generadas = 0;
-        while(generadas<=this.numeroBolasPoder){
-            int limiteSuperiorRangoX = coordenadas.length-1;
-            int limiteSuperiorRangoY = (coordenadas[0]).length-1;
-            int coordenadaRandomX =((int) (Math.random() * (limiteSuperiorRangoX - 0 + 1) + 0));
+        while (generadas <= this.numeroBolasPoder) {
+            int limiteSuperiorRangoX = coordenadas.length - 1;
+            int limiteSuperiorRangoY = (coordenadas[0]).length - 1;
+            int coordenadaRandomX = ((int) (Math.random() * (limiteSuperiorRangoX - 0 + 1) + 0));
             int coordenadaRandomY = ((int) (Math.random() * (limiteSuperiorRangoY - 0 + 1) + 0));
             Punto punto = coordenadas[coordenadaRandomX][coordenadaRandomY];
             if (punto.galleta) {
-                punto.galleta=false;
-                punto.bolaDePoder=true;
-                punto.puntaje=30;
-                generadas ++;
+                punto.galleta = false;
+                punto.bolaDePoder = true;
+                generadas++;
             }
         }
 
@@ -267,7 +291,7 @@ public class Tablero extends JPanel implements ActionListener {
 
                 for (int j = pacman.x; j < pacman.x + pacman.ancho; j++) {
                     for (int k = pacman.y; k < pacman.y + pacman.alto; k++) {
-                        //buscando colisiones con galletas 
+                        //buscando colisiones con galletas  y bolas de poder
                         if ((j % 30 == 0) && (k % 30 == 0)) {
                             if (k / 30 < 18) {
                                 Punto punto = coordenadas[j / 30][k / 30];
@@ -279,35 +303,85 @@ public class Tablero extends JPanel implements ActionListener {
                                     jugador.puntaje = jugador.puntaje + punto.puntaje;
                                     punto.bolaDePoder = false;
                                     comida--;
-                                }
-                            }
 
-                        }
+                                    conPoder = true;
+                                    this.velocidadFantasmas -= 1;
+                                    this.velocidadPacmans += 1;
 
-                        //buscando colisiones con fantasmas
-                        for (int l = 0; l < fantasmas.length; l++) {
-                            Fantasma fantasma = fantasmas[l];
+                                    //vomitando las galletas de los rivales
+                                    int puntajePorGalleta = (coordenadas[0][0]).puntaje;
+                                    for (int l = 0; l < jugadores.length; l++) {
+                                        Jugador jugadorAux = jugadores[l];
+                                        if (l != i) {
+                                            int numeroGalletasJugador = (int) Math.floor((double) (jugadorAux.puntaje / puntajePorGalleta));
+                                            if (numeroGalletasJugador > 5) {
+                                                numeroGalletasJugador = 5;
+                                            }
+                                            for (int m = 0; m < numeroGalletasJugador; m++) {
+                                                int limiteSuperiorRangoX = coordenadas.length - 1;
+                                                int limiteSuperiorRangoY = (coordenadas[0]).length - 1;
+                                                int coordenadaRandomX = ((int) (Math.random() * (limiteSuperiorRangoX - 0 + 1) + 0));
+                                                int coordenadaRandomY = ((int) (Math.random() * (limiteSuperiorRangoY - 0 + 1) + 0));
+                                                Punto puntoAux = coordenadas[coordenadaRandomX][coordenadaRandomY];
+                                                if (!puntoAux.galleta && !puntoAux.bolaDePoder && !puntoAux.obstaculo) {
+                                                    puntoAux.galleta = true;
+                                                    puntoAux.bolaDePoder = false;
+                                                    comida++;
+                                                }
+                                            }
+                                            jugadorAux.puntaje = jugadorAux.puntaje - puntajePorGalleta;
 
-                            int xMenor = fantasma.x;
-
-                            int yMenor = fantasma.y;
-
-                            int xMayor = xMenor + fantasma.ancho;
-
-                            int yMayor = yMenor + fantasma.alto;
-
-                            for (int m = pacman.x; m <= pacman.x + pacman.ancho; m++) {
-                                for (int n = pacman.y; n <= pacman.y + pacman.alto; n++) {
-                                    if ((m >= xMenor - 1) && (n >= yMenor - 1)) {
-                                        if ((m <= xMayor) && (n <= yMayor)) {
-                                            jugador.morir();
                                         }
                                     }
                                 }
                             }
 
                         }
+
                     }
+                }
+                //buscando colisiones con fantasmas
+                Boolean muerto = false;
+                for (int l = 0; l < fantasmas.length; l++) {
+                    if (muerto) {
+                        break;
+                    }
+                    Fantasma fantasma = fantasmas[l];
+
+                    int xMenor = fantasma.x;
+
+                    int yMenor = fantasma.y;
+
+                    int xMayor = xMenor + fantasma.ancho;
+
+                    int yMayor = yMenor + fantasma.alto;
+
+                    for (int m = pacman.x; m <= pacman.x + pacman.ancho; m++) {
+                        if (muerto) {
+                            break;
+                        }
+                        for (int n = pacman.y; n <= pacman.y + pacman.alto; n++) {
+                            if (muerto) {
+                                break;
+                            }
+                            if ((m >= xMenor - 1) && (n >= yMenor - 1)) {
+                                if ((m <= xMayor) && (n <= yMayor)) {
+                                    if (conPoder) {
+                                        //matando al fantasma (teleportandolo a un lugar fuera del mapa)
+                                        fantasma.x = this.superiorx + 100;
+                                        fantasma.y = this.superiory + numeroFantasmasMuertos + 30;
+                                        fantasma.vivo=false;
+                                    } else {
+                                        jugador.morir();
+                                    }
+
+                                    muerto = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
             //dibujando Galletas
@@ -352,10 +426,15 @@ public class Tablero extends JPanel implements ActionListener {
             for (int i = 0; i < numeroFantasmas; i++) {
                 Fantasma fantasma = fantasmas[i];
                 fantasma.mover();
-                g.drawImage(fantasma.imagen, fantasma.x, fantasma.y, this);
+                if (conPoder) {
+                    g.drawImage(imagenFantasma2, fantasma.x, fantasma.y, this);
+                } else {
+                    g.drawImage(imagenFantasma1, fantasma.x, fantasma.y, this);
+                }
+
             }
             //contabilizando la cantidad de galletas
-            if (comida==0) {
+            if (comida == 0) {
                 finalizarPartida();
             }
             //contabilizando los frames de actualizacion
@@ -372,13 +451,17 @@ public class Tablero extends JPanel implements ActionListener {
             if (jugadores.length == 2) {
                 if (comida == 0) {
                     if (jugadores[0].puntaje < jugadores[1].puntaje) {
-                        ganador=1;
-                        mensaje = "Partida finalizada:\n El ganador fue: " +jugadores[ganador].numeroJugador +"\nCon un puntaje de: "+jugadores[ganador].puntaje;
+                        ganador = 1;
+                    }
+                } else {
+                    if (jugadores[0].numeroVidas == 0) {
+                        ganador = 1;
                     }
                 }
-            }
-            else{
-                mensaje = "Partida finalizada:\n El ganador fue: " +jugadores[ganador].numeroJugador +"\nCon un puntaje de: "+jugadores[ganador].puntaje;
+                mensaje = "Partida finalizada:\n El ganador fue: " + jugadores[ganador].numeroJugador + "\nCon un puntaje de: " + jugadores[ganador].puntaje;
+
+            } else {
+                mensaje = "Partida finalizada:\n El puntaje objtenido fue: " + jugadores[ganador].puntaje;
             }
 
             g.drawString(mensaje, 810 / 2, 300);
@@ -395,12 +478,38 @@ public class Tablero extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         actualizarTablero();
-
     }
     //----------------------------------------------finalizar partida---------------------------------------------------------------------------
 
     public void finalizarPartida() {
         partidaFinalizada = true;
+    }
+
+    //-----------------------------------------------controlador de tiempo----------------------------------------------------------------------
+    public void controlador() {
+        TimerTask task = new TimerTask() {
+
+            public void run() {
+                timepoPartida += 1000;
+                if (conPoder) {
+                    if (tiempoConPoder == 8000) {
+
+                        velocidadFantasmas -= 1;
+                        velocidadPacmans += 1;
+
+                        //colocando el juego en estado sin poder
+                        conPoder = false;
+                        tiempoConPoder = 0;
+
+                    } else {
+                        tiempoConPoder+=10;
+                    }
+                }
+            }
+        };
+
+        //ejecutando tarea de poder
+        timer.scheduleAtFixedRate(task, 0, 10);
     }
 
     //-------------------------------------------------------------------------controles--------------------------------------------------------

@@ -19,6 +19,7 @@ public class Pacman {
     int ancho;
     int alto;
     Image imagen;
+    
 
     boolean moverArriba = false;
     boolean moverAbajo = false;
@@ -31,8 +32,7 @@ public class Pacman {
     int superiory;
     int inferiory;
     int inferiorx;
-    //variable que dice la velocidad, por defecto el profesor la dejo en 4
-    int velocidad;
+
 
     public Pacman(String color, Tablero tablero) {
         this.imagen = new ImageIcon(this.getClass().getResource("/imagenes/pacman/" + color + "/pacman-derecha.gif")).getImage();
@@ -41,7 +41,6 @@ public class Pacman {
         this.superiory = tablero.superiory;
         this.inferiorx = tablero.inferiorx;
         this.inferiory = tablero.inferiory;
-        this.velocidad = 4;
         this.color = color;
         this.alto=22;
         this.ancho=22;
@@ -62,8 +61,8 @@ public class Pacman {
     public void mover() {
         //verificando si esta dentro de los limites del tablero
         if (moverArriba) {
-            if (y - velocidad >= 0) {
-                y -= velocidad;
+            if (y - tablero.velocidadPacmans >= 0) {
+                y -= tablero.velocidadPacmans;
             } else {
                 y = inferiory;
                 moverArriba = false;
@@ -71,24 +70,24 @@ public class Pacman {
 
         }
         if (moverAbajo) {
-            if (y + velocidad <= superiory) {
-                y += velocidad;
+            if (y + tablero.velocidadPacmans <= superiory) {
+                y += tablero.velocidadPacmans;
             } else {
                 y = superiory;
                 moverAbajo = false;
             }
         }
         if (moverDerecha) {
-            if (x + velocidad <= superiorx) {
-                x += velocidad;
+            if (x + tablero.velocidadPacmans <= superiorx) {
+                x += tablero.velocidadPacmans;
             } else {
                 x = superiorx;
                 moverDerecha = false;
             }
         }
         if (moverIzquierda) {
-            if (x - velocidad >= 0) {
-                x -= velocidad;
+            if (x - tablero.velocidadPacmans >= 0) {
+                x -= tablero.velocidadPacmans;
             } else {
                 x = inferiorx;
                 moverIzquierda = false;
@@ -105,19 +104,19 @@ public class Pacman {
             if ((x >= xMenor-18) && (y >= yMenor-18)) {
                 if ((x <= xMayor+30) && (y <= yMayor+30)) {
                     if (moverArriba) {
-                        y=y+velocidad;
+                        y=y+tablero.velocidadPacmans;
                         moverArriba=false;
                     }
                     if (moverAbajo) {
-                        y=y-velocidad;
+                        y=y-tablero.velocidadPacmans;
                         moverAbajo=false;
                     }
                     if (moverDerecha) {
-                        x=x-velocidad;
+                        x=x-tablero.velocidadPacmans;
                         moverDerecha=false;
                     }
                     if (moverIzquierda) {
-                        x=x+velocidad;
+                        x=x+tablero.velocidadPacmans;
                         moverDerecha=false;
                     }
                 }
