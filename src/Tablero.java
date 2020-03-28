@@ -72,7 +72,8 @@ public class Tablero extends JPanel implements ActionListener {
 
     Image imagenFantasma1;
     Image imagenFantasma2;
-
+    
+    //constructor
     public Tablero(int x, int y) {
         timer = new Timer();
         superiorx = x - 30 - 10;
@@ -85,8 +86,10 @@ public class Tablero extends JPanel implements ActionListener {
 
         imagenFantasma1 = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma1.gif")).getImage();
         imagenFantasma2 = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma2.gif")).getImage();
-
+        
+        //configuracion y generacion inicial
         initialSpawn();
+        //conteo del tiempo (utilizado para mostrar el tiempo de la partida y controlar los 8 segundos en los que el jugador tiene poder)
         controlador();
         setFocusable(true);
         requestFocusInWindow();
@@ -242,10 +245,10 @@ public class Tablero extends JPanel implements ActionListener {
         //generando spawns de fantasmas
         spawnsFantasmas = new Punto[2];
         int xAux = ((int) (Math.random() * (this.numCoordenadasX - 0 + 1) + 0)) * 30;
-        int yAux = ((int) (Math.random() * (this.numCoordenadasY - 0 + 1) + 0)) * 30;
+        int yAux = ((int) (Math.random() * (2 - 0 + 1) + 0)) * 30;
         this.spawnsFantasmas[0] = new Punto(xAux, yAux);
         xAux = ((int) (Math.random() * (this.numCoordenadasX - 0 + 1) + 0)) * 30;
-        yAux = ((int) (Math.random() * (this.numCoordenadasY - 0 + 1) + 0)) * 30;
+        yAux = ((int) (Math.random() * (2 - 0 + 1) + 0)) * 30;
         this.spawnsFantasmas[1] = new Punto(xAux, yAux);
 
         System.out.println("Que rango de FANTASMAS deben de aparecer en el mapa?");
@@ -259,7 +262,7 @@ public class Tablero extends JPanel implements ActionListener {
         for (int i = 0; i < numeroFantasmas; i++) {
             fantasmas[i] = new Fantasma(this);
         }
-
+        // preguntando sobre bolas de poder
         System.out.println("Que rango de BOLAS DE PODER deben de aparecer en el mapa?");
         System.out.println("Escriba limite inferior del rango:");
         this.limiteInferiorBolasPoder = entrada.nextInt();
@@ -289,6 +292,7 @@ public class Tablero extends JPanel implements ActionListener {
 
         if (!partidaFinalizada) {
             //verificando colisiones
+            //jugadores
             for (int i = 0; i < jugadores.length; i++) {
                 Jugador jugador = jugadores[i];
                 Pacman pacman = jugador.pacman;
@@ -395,6 +399,8 @@ public class Tablero extends JPanel implements ActionListener {
 
                 }
             }
+            
+            //-------------------------dibujando todo el tablero-----------------------------------------------------
             //dibujando Galletas
             g.setColor(Color.ORANGE);
             for (int i = 0; i < numCoordenadasX; i++) {
@@ -455,7 +461,7 @@ public class Tablero extends JPanel implements ActionListener {
             } else {
                 this.frames++;
             }
-
+//-------------------------------------finalizando partida--------------------------------------
         } else {
             String mensaje = "Partida finalizada.";
             //eligiendo al ganador
@@ -470,13 +476,14 @@ public class Tablero extends JPanel implements ActionListener {
                         ganador = 1;
                     }
                 }
-                mensaje = "Partida finalizada:\n El ganador fue: " + jugadores[ganador].numeroJugador + "\nCon un puntaje de: " + jugadores[ganador].puntaje;
+                mensaje = "Partida finalizada:\n El ganador fue el jugador: " + jugadores[ganador].numeroJugador + "\nCon un puntaje de: " + jugadores[ganador].puntaje;
 
             } else {
                 mensaje = "Partida finalizada:\n El puntaje objtenido fue: " + jugadores[ganador].puntaje;
             }
-
-            g.drawString(mensaje, 810 / 2, 300);
+            g.setColor(Color.MAGENTA);
+            //escribiendo el mensaje con el metodo del profesor
+            g.drawString(mensaje, (810 / 2)-200, 300);
         }
 
     }
@@ -502,14 +509,14 @@ public class Tablero extends JPanel implements ActionListener {
         TimerTask task = new TimerTask() {
 
             public void run() {
-                timepoPartida += 1000;
+                timepoPartida += 10;
                 if (conPoder) {
                     if (tiempoConPoder == 8000) {
 
+                        //colocando el juego en estado sin poder
                         velocidadFantasmas = velocidadFantasmas * 2;
                         velocidadPacmans = velocidadPacmans / 2;
 
-                        //colocando el juego en estado sin poder
                         conPoder = false;
                         tiempoConPoder = 0;
 
@@ -520,7 +527,7 @@ public class Tablero extends JPanel implements ActionListener {
             }
         };
 
-        //ejecutando tarea de poder
+        //ejecutando tarea de poder cada 10 milisegundos
         timer.scheduleAtFixedRate(task, 0, 10);
     }
 

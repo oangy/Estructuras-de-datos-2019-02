@@ -30,7 +30,7 @@ public class Fantasma {
     int y;
     int ancho;
     int alto;
-
+    //variable utilizada para el movimiento aleatorio del fantasma
     int moviFantasma;
     Image imagen1;
     Tablero tablero;
@@ -43,7 +43,7 @@ public class Fantasma {
         this.inferiorx = tablero.inferiorx;
         this.inferiory = tablero.inferiory;
         this.imagen1 = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma1.gif")).getImage();
-        this.moviFantasma = ((int) (Math.random() * (200 - 0 + 1) + 0));
+        this.moviFantasma = ((int) (Math.random() * (150 - 0 + 1) + 0));
         this.alto = 22;
         this.ancho = 22;
         spawn();
@@ -60,7 +60,7 @@ public class Fantasma {
 
     public void mover() {
         if (vivo) {
-            //verificar 
+            //verificar aleatorio
             if (moviFantasma - tablero.frames == 0) {
                 moverArriba = false;
                 moverAbajo = false;
