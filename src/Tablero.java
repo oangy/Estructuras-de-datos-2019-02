@@ -95,6 +95,7 @@ public class Tablero extends JPanel implements ActionListener {
 //------------------------------------------------------------------------------preguntando parametros iniciales y generando todo el mapa-----------------------------------------------------------------
 
     public void initialSpawn() {
+        //preguntando numero de jugadores
         int numeroJugadores = 1;
         while (true) {
             System.out.println("Ingrese la cantidad de jugadores(1-2)");
@@ -108,7 +109,8 @@ public class Tablero extends JPanel implements ActionListener {
         //creamos el arreglo de los jugadores
         this.jugadores = new Jugador[numeroJugadores];
         int color1, color2;
-
+        
+        //preguntando colores
         String color1L = "amarillo";
         String color2L = "amarillo";
         while (true) {

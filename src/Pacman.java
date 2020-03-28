@@ -54,8 +54,6 @@ public class Pacman {
         int inicioY=tablero.numCoordenadasY-3;
         int finY =tablero.numCoordenadasY;
         this.y = ((int)(Math.random()*(finY-inicioY+1)+inicioY))*30;
-        System.out.println(this.x);
-        System.out.println(this.y);
     }
     
     public void mover() {

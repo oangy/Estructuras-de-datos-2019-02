@@ -6,11 +6,12 @@
 
 /**
  *
- * @author santi
+ * @author angy
  */
 public class Obstaculo {
     Punto inicio;
     Punto fin;
+    //constructor
     public Obstaculo(Punto inicio,Punto fin){
         this.inicio=inicio;
         this.fin=fin;
