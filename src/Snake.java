@@ -21,7 +21,7 @@ public class Snake extends JFrame {
         add(new Tablero(x,y));
 
         setResizable(false);
-            setSize(new Dimension(x, y));
+            setSize(new Dimension(x+15+8+30, y+15+10+10+80));
         setTitle("PAC-MAN");
         setLocationRelativeTo(null);
         //Dimension o = this.getSize();

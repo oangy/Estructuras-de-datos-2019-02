@@ -20,6 +20,8 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.util.concurrent.TimeUnit;
+
 public class Tablero extends JPanel implements ActionListener {
 
     private Boolean partidaFinalizada = false;
@@ -72,7 +74,7 @@ public class Tablero extends JPanel implements ActionListener {
 
     Image imagenFantasma1;
     Image imagenFantasma2;
-    
+
     //constructor
     public Tablero(int x, int y) {
         timer = new Timer();
@@ -86,7 +88,7 @@ public class Tablero extends JPanel implements ActionListener {
 
         imagenFantasma1 = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma1.gif")).getImage();
         imagenFantasma2 = new ImageIcon(this.getClass().getResource("/imagenes/fantasmas/fantasma2.gif")).getImage();
-        
+
         //configuracion y generacion inicial
         initialSpawn();
         //conteo del tiempo (utilizado para mostrar el tiempo de la partida y controlar los 8 segundos en los que el jugador tiene poder)
@@ -112,7 +114,7 @@ public class Tablero extends JPanel implements ActionListener {
         //creamos el arreglo de los jugadores
         this.jugadores = new Jugador[numeroJugadores];
         int color1, color2;
-        
+
         //preguntando colores
         String color1L = "amarillo";
         String color2L = "amarillo";
@@ -378,12 +380,12 @@ public class Tablero extends JPanel implements ActionListener {
                                 if ((m <= xMayor) && (n <= yMayor)) {
                                     if (conPoder) {
                                         //matando al fantasma (teleportandolo a un lugar fuera del mapa)
-                                        fantasma.x = this.superiorx + 100;
+                                        fantasma.x = this.superiorx + 50;
                                         fantasma.y = this.superiory + numeroFantasmasMuertos + 30;
                                         fantasma.vivo = false;
                                         jugador.numeroFantasmasAsesinadosFriamente++;
-                                        if (jugador.numeroFantasmasAsesinadosFriamente%3==0) {
-                                            System.out.println("Jugador "+jugador.numeroJugador+" ganaste un nuevo pacman.");
+                                        if (jugador.numeroFantasmasAsesinadosFriamente % 3 == 0) {
+                                            System.out.println("Jugador " + jugador.numeroJugador + " ganaste un nuevo pacman.");
                                             jugador.numeroVidas++;
                                         }
                                     } else {
@@ -399,7 +401,7 @@ public class Tablero extends JPanel implements ActionListener {
 
                 }
             }
-            
+
             //-------------------------dibujando todo el tablero-----------------------------------------------------
             //dibujando Galletas
             g.setColor(Color.ORANGE);
@@ -434,6 +436,16 @@ public class Tablero extends JPanel implements ActionListener {
                 //abajo
                 g.drawLine(xMenor, yMayor, xMayor, yMayor);
             }
+            //dibujando bordes de mapa
+            // izquierda
+            g.drawLine(0, 0, 0, superiory+30);
+            //derecha
+            g.drawLine(superiorx+30, 0, superiorx+30, superiory+30);
+            //arriba
+            g.drawLine(0, 0, superiorx+30, 0);
+            //abajo
+            g.drawLine(0, superiory+30, superiorx+30, superiory+30);
+
             //recorriendo todos los pacmans moviendolos y dibujandolos
             for (int i = 0; i < jugadores.length; i++) {
                 Pacman pacman = jugadores[i].pacman;
@@ -455,7 +467,37 @@ public class Tablero extends JPanel implements ActionListener {
             if (comida == 0) {
                 finalizarPartida();
             }
-            //contabilizando los frames de actualizacion
+
+            //------------------------------------------------dibujando cosas de la bonificacion----------------------------------------------------------------
+            //tablero jugador 1
+            int coordenadaXVidas = 0;
+            g.drawString("Jugador 1: ",10, superiory+40);
+            Jugador jugador = jugadores[0];
+            for (int i = 0; i < jugador.numeroVidas; i++) {
+                coordenadaXVidas += 30;
+                Image imagenPacman = new ImageIcon(this.getClass().getResource("/imagenes/pacman/" + jugador.pacman.color + "/pacman-izquierda-quieto.png")).getImage();
+                g.drawImage(imagenPacman, coordenadaXVidas, superiory + 60, this);
+            }
+            g.drawString("Puntaje: "+jugador.puntaje,coordenadaXVidas, superiory+90);
+
+            //tablero jugador 2
+            if (jugadores.length == 2) {
+                g.drawString("Jugador 2: ",30+superiorx/2, superiory+40);
+                coordenadaXVidas = 30+ superiorx / 2;
+                jugador = jugadores[1];
+                for (int i = 0; i < jugador.numeroVidas; i++) {
+                    coordenadaXVidas += 30;
+                    Image imagenPacman = new ImageIcon(this.getClass().getResource("/imagenes/pacman/" + jugador.pacman.color + "/pacman-izquierda-quieto.png")).getImage();
+                    g.drawImage(imagenPacman, coordenadaXVidas, superiory + 60, this);
+                }
+                g.drawString("Puntaje: "+jugador.puntaje,coordenadaXVidas, superiory+90);
+            }
+            
+            //tiempo de partida 
+            g.drawString("Tiempo de partida: "+TimeUnit.MILLISECONDS.toSeconds(this.timepoPartida)+" segundos",(superiorx/2)-40, superiory+115);
+            //tiempo de poder 
+            g.drawString("Tiempo con poder: "+TimeUnit.MILLISECONDS.toSeconds(this.tiempoConPoder)+" segundos",(superiorx/2)-40, superiory+130);
+            //contabilizando los frames(fotogramas) de actualizacion
             if (this.frames == 150) {
                 this.frames = 0;
             } else {
@@ -476,14 +518,14 @@ public class Tablero extends JPanel implements ActionListener {
                         ganador = 1;
                     }
                 }
-                mensaje = "Partida finalizada:\n El ganador fue el jugador: " + jugadores[ganador].numeroJugador + "\nCon un puntaje de: " + jugadores[ganador].puntaje;
+                mensaje = "Partida finalizada:\n El ganador fue el jugador: " + jugadores[ganador].numeroJugador + "\n Con un puntaje de: " + jugadores[ganador].puntaje;
 
             } else {
                 mensaje = "Partida finalizada:\n El puntaje objtenido fue: " + jugadores[ganador].puntaje;
             }
             g.setColor(Color.MAGENTA);
             //escribiendo el mensaje con el metodo del profesor
-            g.drawString(mensaje, (810 / 2)-200, 300);
+            g.drawString(mensaje, (superiorx / 2) - 200, superiory/2);
         }
 
     }

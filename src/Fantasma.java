@@ -32,6 +32,7 @@ public class Fantasma {
     int alto;
     //variable utilizada para el movimiento aleatorio del fantasma
     int moviFantasma;
+    
     Image imagen1;
     Tablero tablero;
     Boolean vivo;
