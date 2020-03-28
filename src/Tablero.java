@@ -525,7 +525,7 @@ public class Tablero extends JPanel implements ActionListener {
             }
             g.setColor(Color.MAGENTA);
             //escribiendo el mensaje con el metodo del profesor
-            g.drawString(mensaje, (superiorx / 2) - 200, superiory/2);
+            g.drawString(mensaje, (superiorx / 2) - 120, 30+superiory/2);
         }
 
     }
